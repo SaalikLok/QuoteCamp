@@ -15,6 +15,12 @@ class User(Base):
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
 
+class Category(Base):
+    __tablename__ = 'category'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable=False)
+
 class Quote(Base):
     __tablename__ = 'quote'
 
@@ -25,12 +31,6 @@ class Quote(Base):
     category_id = Column(Integer, ForeignKey('category.id'))
     poster = relationship(User)
     category = relationship(Category)
-
-class Category(Base):
-    __tablename__ = 'category'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
 
 engine = create_engine('sqlite:///quotecamp.db')
 Base.metadata.create_all(engine)
