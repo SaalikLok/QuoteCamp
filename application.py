@@ -21,8 +21,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 @app.route('/')
-@app.route('/hello')
-def HelloWorld():
+def HomePage():
     return render_template('main.html')
 
 @app.route('/login')
@@ -123,26 +122,25 @@ def gdisconnect():
 @app.route('/categories/')
 def CategoriesPage():
     # List all the categories in the app on a page.
-    categoryListFromDB = session.query(Category).all()
-    output = ""
-    for i in categoryListFromDB:
-        output += (i.name + '<br/>')
-    return output
+    categories = session.query(Category).all()
+    return render_template('categories.html', categories=categories)
 
 @app.route('/categories/<category_name>/')
+@app.route('/categories/category/')
 def CategoryPage():
     # Get all the quotes under the specified category
-    return "Category Page"
+    return render_template('category.html')
 
+@app.route('/categories/category/quote')
 @app.route('/categories/<category_name>/<int:quote_id>')
 def QuotePage():
     # Get the specifics of the quote page
-    return "Quote Page"
+    return render_template('quoteview.html')
 
-@app.route('/categories/<category_name>/new')
+@app.route('/categories/newquote/')
 def NewQuotePage():
-    # Template for creating a new quote within the given category
-    return "New Quote Page"
+    categories = session.query(Category).all()
+    return render_template('newquote.html', categories=categories)
 
 @app.route('/categories/<category_name>/<int:quote_id>/edit')
 def EditQuotePage():
