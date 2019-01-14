@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css?family=Bitter');
+
+.container{
+    font-family: 'Bitter', serif;
+    color: #4A4A4A;
+    text-align: center;
+}
+
+img.campimg{
+    width: 150px;
+    height: 150px;
+}
+
+.page-heading{
+    padding: 50px;
+}
+
+.card{
+    cursor: pointer;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+    transition: box-shadow 500ms;
+}
+
+.card:hover{
+    box-shadow: 0 10px 50px 0 rgba(0, 0, 0, 0.5);
+}
