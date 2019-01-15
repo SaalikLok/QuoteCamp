@@ -20,6 +20,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('CategoriesPage')}}">Categories</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('NewQuotePage')}}">Add A Quote</a>
+                    </li>
                 </ul>
                 <a class="nav-link" href="{{url_for('LoginPage')}}">Login</a>
             </div>
@@ -29,55 +32,19 @@
         <h4>A Crowdsourced Quote Catalog</h4>
         <h2 class="page-heading">Latest Quotes</h2>
         <div class="row">
+            {% for quote in latestquotes %}
             <!--Here there will be a for loop of the 5 latest quotes-->
             <div class="col-md">
+                <a href="{{ url_for('QuotePage', quote_id=quote.id, category_id=quote.category_id) }}">
                     <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
                         <div class="card-body">
-                            <p class="card-text">This is a quote that goes on and on and I think it's really great wowooww.</p>
-                            <h6 class="card-subtitle mb-2 text-muted">Author</h6>                            
+                            <p class="card-text" style="color: #4a4a4a;">{{quote.content}}</p>
+                            <h6 class="card-subtitle mb-2 text-muted">{{quote.author}}</h6>                            
                         </div>
                     </div>
-                </div>
-                <div class="col-md">
-                        <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
-                            <div class="card-body">
-                                <p class="card-text">This is a quote that goes on and on and I think it's really great wowooww.</p>
-                                <h6 class="card-subtitle mb-2 text-muted">Author</h6>                            
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md">
-                            <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
-                                <div class="card-body">
-                                    <p class="card-text">This is a quote that goes on and on and I think it's really great wowooww.</p>
-                                    <h6 class="card-subtitle mb-2 text-muted">Author</h6>                            
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md">
-                                <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
-                                    <div class="card-body">
-                                        <p class="card-text">This is a quote that goes on and on and I think it's really great wowooww.</p>
-                                        <h6 class="card-subtitle mb-2 text-muted">Author</h6>                            
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md">
-                                    <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
-                                        <div class="card-body">
-                                            <p class="card-text">This is a quote that goes on and on and I think it's really great wowooww.</p>
-                                            <h6 class="card-subtitle mb-2 text-muted">Author</h6>                            
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md">
-                                        <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
-                                            <div class="card-body">
-                                                <p class="card-text">This is a quote that goes on and on and I think it's really great wowooww.</p>
-                                                <h6 class="card-subtitle mb-2 text-muted">Author</h6>                            
-                                            </div>
-                                        </div>
-                                    </div>
+                </a>
+            </div>
+            {% endfor %}
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

@@ -11,18 +11,19 @@ from oauth2client.client import FlowExchangeError
 import httplib2
 import json
 import requests
+import datetime
 
 CLIENT_ID = json.loads(open('client-secrets.json', 'r').read())['web']['client_id']
 
 engine = create_engine('sqlite:///quotecamp.db')
 Base.metadata.bind = engine
-
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 @app.route('/')
 def HomePage():
-    return render_template('main.html')
+    latestquotes = session.query(Quote).all()
+    return render_template('main.html', latestquotes=latestquotes)
 
 @app.route('/login')
 def LoginPage():
@@ -181,24 +182,38 @@ def CategoriesPage():
     categories = session.query(Category).all()
     return render_template('categories.html', categories=categories)
 
-@app.route('/categories/<category_name>/')
+@app.route('/categories/<category_id>/')
 @app.route('/categories/category/')
-def CategoryPage():
+def CategoryPage(category_id):
     # Get all the quotes under the specified category
-    return render_template('category.html')
+    category = session.query(Category).filter_by(id=category_id).one()
+    quotes = session.query(Quote).filter_by(category_id=category_id).all()
+    return render_template('category.html', quotes = quotes, category = category)
 
-@app.route('/categories/category/quote')
-@app.route('/categories/<category_name>/<int:quote_id>')
-def QuotePage():
+#@app.route('/categories/category/quote')
+@app.route('/categories/<category_id>/<int:quote_id>')
+def QuotePage(quote_id, category_id):
     # Get the specifics of the quote page
-    return render_template('quoteview.html')
+    quote = session.query(Quote).filter_by(id=quote_id).one()
+    return render_template('quoteview.html', quote=quote)
 
-@app.route('/categories/newquote/')
+@app.route('/categories/newquote/', methods=['GET', 'POST'])
 def NewQuotePage():
-    if 'username' not in login_session:
-        return redirect('/login')
-    categories = session.query(Category).all()
-    return render_template('newquote.html', categories=categories)
+   # if 'username' not in login_session:
+    #    return redirect('/login')
+    if request == 'POST':
+        NewQuotePage = Quote(
+            content=request.form['quote'], 
+            author=request.form['author'], 
+            category=request.form['category'],
+            datetime_added=datetime.datetime.now(),
+            poster_id=login_session['user_id'])
+        session.add(NewQuotePage)
+        session.commit()
+        return render_template('CategoryPage')
+    else:
+        categories = session.query(Category).all()
+        return render_template('newquote.html', categories=categories)
 
 @app.route('/categories/<category_name>/<int:quote_id>/edit')
 def EditQuotePage():

@@ -20,6 +20,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('CategoriesPage')}}">Categories</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('NewQuotePage')}}">Add A Quote</a>
+                    </li>
                 </ul>
                 <a class="nav-link" href="{{url_for('LoginPage')}}">Login</a>
             </div>
@@ -27,9 +30,10 @@
         <h2 class="page-heading">Categories</h2>
         
         <div class="row">
-            {% for i in categories %}
+            {% for category in categories %}
             <div class="col-4">
-                <p>{{i.name}}</p>
+                <a href="{{url_for('CategoryPage', category_id = category.id)}}"
+                <p>{{category.id}}</p>
             </div>
             {% endfor %}
         </div>

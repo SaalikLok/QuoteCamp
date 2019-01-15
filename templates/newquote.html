@@ -20,30 +20,33 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('CategoriesPage')}}">Categories</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('NewQuotePage')}}">Add A Quote</a>
+                    </li>
                 </ul>
                 <a class="nav-link" href="{{url_for('LoginPage')}}">Login</a>
             </div>
         </nav>
         <h2 class="page-heading">Add a New Quote</h2>
         
-        <form>
+        <form action="#" method="POST">
             <div class="form-group">
                 <label for="quote">Quote</label>
-                <textarea class="form-control" id="quote" rows="2"></textarea>
+                <textarea name="quote" class="form-control" id="quote" rows="2"></textarea>
             </div>
             <div class="form-group">
                     <label for="author">Author</label>
-                    <input type="text" class="form-control" id="author">
+                    <input name="author" type="text" class="form-control" id="author">
             </div>
             <div class="form-group">
                     <label for="category">Category</label>
-                    <select class="form-control" id="category">
+                    <select name="category" class="form-control" id="category">
                         {% for i in categories %}
-                            <option>{{i.name}}</option>
+                            <option>{{i.id}}</option>
                         {% endfor %}
                     </select>
             </div>
-            <button type="button" class="btn btn-secondary">Save</button>
+            <button type="submit" type="submit" class="btn btn-secondary">Save</button>
         </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

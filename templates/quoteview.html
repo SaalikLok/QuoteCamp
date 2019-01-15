@@ -20,14 +20,18 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('CategoriesPage')}}">Categories</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('NewQuotePage')}}">Add A Quote</a>
+                    </li>
                 </ul>
                 <a class="nav-link" href="{{url_for('LoginPage')}}">Login</a>
             </div>
         </nav>
         <h2 class="page-heading">View Quote</h2>
-        <h4 class="page-heading">"This is a quote that will eventually be made using the database"</h4>
-        <h5>Author Authorface</h5>
-        <p style="margin-top: 50px;">Uploaded By UserName</p>
+        <h4 class="page-heading">"{{quote.content}}"</h4>
+        <h5>{{quote.author}}</h5>
+        <p style="margin-top: 50px;">Organized In: {{quote.category_id}}</p>
+        <p>Uploaded By {{quote.poster_id}}</p>
         <span><a href="#">Edit</a> | <a href="#">Delete</a></span>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

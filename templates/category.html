@@ -20,46 +20,26 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{url_for('CategoriesPage')}}">Categories</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('NewQuotePage')}}">Add A Quote</a>
+                    </li>
                 </ul>
                 <a class="nav-link" href="{{url_for('LoginPage')}}">Login</a>
             </div>
         </nav>
-        <h2 class="page-heading">CategoryNameGoesHere</h2>
+        <h2 class="page-heading">{{category.id}}</h2>
         
         <div class="row">
-            
+            {% for quote in quotes %}
             <div class="col-md">
                 <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
                     <div class="card-body">
-                        <p class="card-text">This is a quote that goes on and on and I think it's really great wowooww.</p>
-                        <h6 class="card-subtitle mb-2 text-muted">Author</h6>                            
+                        <p class="card-text">{{quote.content}}</p>
+                        <h6 class="card-subtitle mb-2 text-muted">{{quote.author}}</h6>                            
                     </div>
                 </div>
             </div>
-            <div class="col-md">
-                <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
-                    <div class="card-body">
-                        <p class="card-text">This is a quote that goes on and on and I think it's really great wowooww.</p>
-                        <h6 class="card-subtitle mb-2 text-muted">Author</h6>                            
-                    </div>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
-                    <div class="card-body">
-                        <p class="card-text">This is a quote that goes on and on and I think it's really great wowooww.</p>
-                        <h6 class="card-subtitle mb-2 text-muted">Author</h6>                            
-                    </div>
-                </div>
-            </div>
-            <div class="col-md">
-                <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
-                    <div class="card-body">
-                        <p class="card-text">This is a quote that goes on and on and I think it's really great wowooww.</p>
-                        <h6 class="card-subtitle mb-2 text-muted">Author</h6>                            
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
 
             <!-- {% for i in quotes %} -->
             <!-- {% endfor %} -->
