@@ -16,6 +16,8 @@ img.campimg{
 }
 
 .card{
+    margin: 0 auto;
+    display: block;
     cursor: pointer;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
     transition: box-shadow 500ms;

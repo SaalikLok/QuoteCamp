@@ -14,6 +14,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
+    picture = Column(String(250))
 
 class Category(Base):
     __tablename__ = 'category'
@@ -21,16 +22,33 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
 
+    @property
+    def serialize(self):
+        return{
+            'name': self.name,
+            'id': self.id,
+        }
+
 class Quote(Base):
     __tablename__ = 'quote'
 
     id = Column(Integer, primary_key=True)
     content = Column(String(500), nullable=False)
-    author = Column(String(250), nullable=True)
+    author = Column(String(250))
     poster_id = Column(Integer, ForeignKey('user.id'))
     category_id = Column(Integer, ForeignKey('category.id'))
     poster = relationship(User)
     category = relationship(Category)
+
+    @property
+    def serialize(self):
+        return{
+            'content': self.content,
+            'author': self.author,
+            'poster_id': self.poster_id,
+            'category_id': self.category_id,
+            'id': self.id
+        }
 
 engine = create_engine('sqlite:///quotecamp.db')
 Base.metadata.create_all(engine)
