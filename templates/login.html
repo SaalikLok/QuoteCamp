@@ -15,6 +15,7 @@
         <script src="https://apis.google.com/js/platform.js" async defer></script>
     </head>
     <body> 
+        <p>Current state token: {{ STATE }}</p>
         <!-- GOOGLE PLUS SIGN IN-->             
         <div id="signinButton">
             <span class="g-signin"
@@ -23,8 +24,8 @@
             data-redirecturi="postmessage"
             data-accesstype="offline"
             data-cookiepolicy="single_host_origin"
-            data-callback="signInCallback"
-            data-approvalprompt="force">
+            data-callback="signInCallback">
+            <!-- data-approvalprompt="force"> -->
             </span>
         </div>
             

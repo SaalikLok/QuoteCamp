@@ -32,12 +32,14 @@
         <div class="row">
             {% for quote in quotes %}
             <div class="col-md">
-                <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
-                    <div class="card-body">
-                        <p class="card-text">{{quote.content}}</p>
-                        <h6 class="card-subtitle mb-2 text-muted">{{quote.author}}</h6>                            
+                <a href="{{ url_for('QuotePage', quote_id=quote.id, category_id=quote.category_id) }}">
+                    <div class="card border-dark" style="width: 18rem; margin-bottom: 40px;">
+                        <div class="card-body">
+                            <p class="card-text">{{quote.content}}</p>
+                            <h6 class="card-subtitle mb-2 text-muted">{{quote.author}}</h6>                            
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             {% endfor %}
 

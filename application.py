@@ -33,7 +33,7 @@ def LoginPage():
         for x in range(32))
     login_session['state'] = state
     
-    # Show the login auth page
+    # Show the login auth page, passing with it the state variable of the random string
     return render_template('login.html', STATE=state)
     # return "Current State Token: " + login_session['state']
 
@@ -47,7 +47,9 @@ def gconnect():
 
     # collect the code from the server, exchange it for a credentials object
     code = request.data
+    print('We got to collecting the code from the server.', file=sys.stdout)
     try:
+        print('Trying oauth flow', file=sys.stdout)
         oauth_flow = flow_from_clientsecrets('client-secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
@@ -79,12 +81,12 @@ def gconnect():
         return response
     
     # Check if the user is already logged in
-    stored_credentials = login_session.get('credentials')
+    stored_credentials = login_session.get('access_token')
     stored_google_id = login_session.get('google_id')
     if stored_credentials is not None and google_id == stored_google_id:
         response = make_response(json.dumps("User is logged in"), 200)
         response.headers['Content-Type'] = 'application/json'
-    login_session['credentials'] = credentials
+    login_session['access_token'] = credentials
     login_session['google_id'] = google_id
 
     # Get user info according to the token's scope
@@ -107,6 +109,7 @@ def gconnect():
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
+    output += str(login_session['user_id'])
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
@@ -201,20 +204,19 @@ def QuotePage(quote_id, category_id):
 
 @app.route('/categories/newquote/', methods=['GET', 'POST'])
 def NewQuotePage():
-   # if 'username' not in login_session:
-    #    return redirect('/login')
-    print('Hello New Quote Page', file=sys.stdout)
+    if 'username' not in login_session:
+        return redirect('/login')
+    print(str(login_session), file=sys.stdout)
+    creator = getUserID("saalikl111@gmail.com")
     if request.method == 'POST':
-        print('Creating a NewQuotePage', file=sys.stdout)
         NewQuotePage = Quote(
             content = request.form['quote'],
             author = request.form['author'],
-            poster_id= "1000",
+            poster_id= creator,
             category_id = request.form['category'],
             datetime_added = datetime.datetime.now(),)
         session.add(NewQuotePage)
         session.commit()
-        print('Commited a new quote', file=sys.stdout)
         return redirect(url_for('HomePage'))
     else:
         categories = session.query(Category).all()
