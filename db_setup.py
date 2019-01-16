@@ -49,5 +49,5 @@ class Quote(Base):
             'id': self.id
         }
 
-engine = create_engine('sqlite:///quotecamp.db')
+engine = create_engine('sqlite:///quotecamp.db', connect_args={'check_same_thread': False})
 Base.metadata.create_all(engine)

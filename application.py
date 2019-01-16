@@ -1,4 +1,6 @@
+from __future__ import print_function
 from flask import Flask, render_template, make_response, request, jsonify, url_for, flash, redirect
+import sys
 app = Flask(__name__)
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -15,7 +17,7 @@ import datetime
 
 CLIENT_ID = json.loads(open('client-secrets.json', 'r').read())['web']['client_id']
 
-engine = create_engine('sqlite:///quotecamp.db')
+engine = create_engine('sqlite:///quotecamp.db', connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
@@ -201,16 +203,19 @@ def QuotePage(quote_id, category_id):
 def NewQuotePage():
    # if 'username' not in login_session:
     #    return redirect('/login')
-    if request == 'POST':
+    print('Hello New Quote Page', file=sys.stdout)
+    if request.method == 'POST':
+        print('Creating a NewQuotePage', file=sys.stdout)
         NewQuotePage = Quote(
-            content=request.form['quote'], 
-            author=request.form['author'], 
-            category=request.form['category'],
-            datetime_added=datetime.datetime.now(),
-            poster_id=login_session['user_id'])
+            content = request.form['quote'],
+            author = request.form['author'],
+            poster_id= "1000",
+            category_id = request.form['category'],
+            datetime_added = datetime.datetime.now(),)
         session.add(NewQuotePage)
         session.commit()
-        return render_template('CategoryPage')
+        print('Commited a new quote', file=sys.stdout)
+        return redirect(url_for('HomePage'))
     else:
         categories = session.query(Category).all()
         return render_template('newquote.html', categories=categories)
