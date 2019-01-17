@@ -29,12 +29,12 @@ session.commit()
 session.add(Category(id = "Poetic"))
 session.commit()
 
-session.add(Quote(
-    id = 1,
-    content = "The biggest adventure you can take is to live the life of your dreams.",
-    author = "Oprah",
-    poster_id= "1000",
-    category_id = "Dreams",
-    datetime_added = datetime.datetime.now(),
-    ))
-session.commit()
+# session.add(Quote(
+#     id = 1,
+#     content = "The biggest adventure you can take is to live the life of your dreams.",
+#     author = "Oprah",
+#     poster_id= "1000",
+#     category_id = "Dreams",
+#     datetime_added = datetime.datetime.now(),
+#     ))
+# session.commit()

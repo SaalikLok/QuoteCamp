@@ -47,7 +47,6 @@ def gconnect():
 
     # collect the code from the server, exchange it for a credentials object
     code = request.data
-    print('We got to collecting the code from the server.', file=sys.stdout)
     try:
         print('Trying oauth flow', file=sys.stdout)
         oauth_flow = flow_from_clientsecrets('client-secrets.json', scope='')
@@ -106,6 +105,7 @@ def gconnect():
         user_id = createUser(login_session)
     login_session['user_id'] = user_id
 
+    print("Login session variable after gconnect", str(login_session), file=sys.stdout)
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -184,6 +184,7 @@ def disconnect():
 @app.route('/categories/')
 def CategoriesPage():
     # List all the categories in the app on a page.
+    print("Login session on categories page", str(login_session), file=sys.stdout)
     categories = session.query(Category).all()
     return render_template('categories.html', categories=categories)
 
@@ -204,9 +205,9 @@ def QuotePage(quote_id, category_id):
 
 @app.route('/categories/newquote/', methods=['GET', 'POST'])
 def NewQuotePage():
-    if 'username' not in login_session:
-        return redirect('/login')
-    print(str(login_session), file=sys.stdout)
+    # if 'username' not in login_session:
+    #     return redirect('/login')
+    print("Login session variable", str(login_session), file=sys.stdout)
     creator = getUserID("saalikl111@gmail.com")
     if request.method == 'POST':
         NewQuotePage = Quote(
