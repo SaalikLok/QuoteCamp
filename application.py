@@ -24,7 +24,7 @@ session = DBSession()
 
 @app.route('/')
 def HomePage():
-    latestquotes = session.query(Quote).all()
+    latestquotes = session.query(Quote).order_by(Quote.datetime_added).all()
     return render_template('main.html', latestquotes=latestquotes)
 
 @app.route('/login')
@@ -257,6 +257,19 @@ def DeleteQuote(quote_id, category_id):
         return redirect(url_for('CategoryPage', category_id=category.id))
     else:
         return render_template('deletequote.html', quote=quoteToDelete)
+
+#JSON Endpoint of entire site
+@app.route('/JSON')
+def allQuotesJSON():
+    quotes = session.query(Quote).all()
+    return jsonify(quotes=[q.serialize for q in quotes])
+
+#JSON list of quotes within a category
+@app.route('/categories/<category_id>/JSON')
+def quotesInCategoryJSON(category_id):
+    category = session.query(Category).filter_by(id=category_id).one()
+    quotes = session.query(Quote).filter_by(category_id=category.id).all()
+    return jsonify(quotes=[q.serialize for q in quotes])
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
