@@ -48,7 +48,6 @@ def gconnect():
     # collect the code from the server, exchange it for a credentials object
     code = request.data
     try:
-        print('Trying oauth flow', file=sys.stdout)
         oauth_flow = flow_from_clientsecrets('client-secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
@@ -67,6 +66,7 @@ def gconnect():
     if(result.get('error') is not None):
         response = make_response(json.dumps(result.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
+        return response
     
     # Check that the access tokens match 
     google_id = credentials.id_token['sub']
@@ -80,12 +80,14 @@ def gconnect():
         return response
     
     # Check if the user is already logged in
-    stored_credentials = login_session.get('access_token')
+    stored_access_token = login_session.get('access_token')
     stored_google_id = login_session.get('google_id')
-    if stored_credentials is not None and google_id == stored_google_id:
-        response = make_response(json.dumps("User is logged in"), 200)
+    if stored_access_token is not None and google_id == stored_google_id:
+        response = make_response(json.dumps("User is logged in and connected"), 200)
         response.headers['Content-Type'] = 'application/json'
-    login_session['access_token'] = credentials
+        return response 
+
+    login_session['access_token'] = credentials.access_token
     login_session['google_id'] = google_id
 
     # Get user info according to the token's scope
@@ -98,9 +100,10 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
+    login_session['provider'] = 'google'
 
     # see if a user exists. If not, make one
-    user_id = getUserID(login_session['email'])
+    user_id = getUserID(data['email'])
     if not user_id:
         user_id = createUser(login_session)
     login_session['user_id'] = user_id
@@ -139,23 +142,17 @@ def getUserID(email):
 @app.route('/gdisconnect')
 def gdisconnect():
     # Disconnect an already connected user
-    credentials = login_session.get('credentials')
-    if credentials is None:
+    access_token = login_session.get('access_token')
+    if access_token is None:
         response = make_response(json.dumps('Current user is not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
     
     # Check with Google's Servers to to disconnect user from them.
-    access_token = credentials.access_token
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     if result['status'] == '200':
-        del login_session['credentials']
-        del login_session['google_id']
-        del login_session['username']
-        del login_session['email']
-        del login_session['picture']
         response = make_response(json.dumps('User successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -201,14 +198,17 @@ def CategoryPage(category_id):
 def QuotePage(quote_id, category_id):
     # Get the specifics of the quote page
     quote = session.query(Quote).filter_by(id=quote_id).one()
-    return render_template('quoteview.html', quote=quote)
+    creator = session.query(User).filter_by(id=quote.poster_id).one()
+    if 'username' not in login_session or creator.id != login_session['user_id']:
+        return render_template('quoteviewpublic.html', quote=quote, creator=creator)
+    else:
+        return render_template('quoteview.html', quote=quote, creator=creator)
 
 @app.route('/categories/newquote/', methods=['GET', 'POST'])
 def NewQuotePage():
-    # if 'username' not in login_session:
-    #     return redirect('/login')
-    print("Login session variable", str(login_session), file=sys.stdout)
-    creator = getUserID("saalikl111@gmail.com")
+    if 'username' not in login_session:
+        return redirect('/login')
+    creator = getUserID(login_session['email'])
     if request.method == 'POST':
         NewQuotePage = Quote(
             content = request.form['quote'],
@@ -223,10 +223,40 @@ def NewQuotePage():
         categories = session.query(Category).all()
         return render_template('newquote.html', categories=categories)
 
-@app.route('/categories/<category_name>/<int:quote_id>/edit')
-def EditQuotePage():
-    # Edit a quote if you are the user that creates/manages that quote
-    return "Edit Quote Page"
+@app.route('/categories/<category_id>/<int:quote_id>/edit', methods=['GET', 'POST'])
+def EditQuotePage(quote_id, category_id):
+    editedQuote = session.query(Quote).filter_by(id=quote_id).one()
+    category = session.query(Category).filter_by(id=category_id).one()
+    if 'username' not in login_session:
+        return redirect('/login')
+    if editedQuote.poster_id != login_session['user_id']:
+            return "<script>function myFunction() {alert('You can't edit this quote, you didn't post it.');}</script><body onload='myFunction()'>"
+    if request.method == 'POST':
+        if request.form['quote']:
+            editedQuote.content = request.form['quote']
+        if request.form['author']:
+            editedQuote.author = request.form['author']
+        if request.form['category']:
+            editedQuote.category_id = request.form['category']
+        return redirect(url_for('CategoryPage', category_id=editedQuote.category_id))
+    else:
+        categories = session.query(Category).all()
+        return render_template('editquote.html', quote=editedQuote, categories=categories)
+
+@app.route('/categories/<category_id>/<int:quote_id>/delete', methods=['GET', 'POST'])
+def DeleteQuote(quote_id, category_id):
+    quoteToDelete = session.query(Quote).filter_by(id=quote_id).one()
+    category = session.query(Category).filter_by(id=category_id).one()
+    if 'username' not in login_session:
+        return redirect('/login')
+    if quoteToDelete.poster_id != login_session['user_id']:
+            return "<script>function myFunction() {alert('You can't delete this quote, you didn't post it.');}</script><body onload='myFunction()'>"
+    if request.method == 'POST':
+        session.delete(quoteToDelete)
+        session.commit()
+        return redirect(url_for('CategoryPage', category_id=category.id))
+    else:
+        return render_template('deletequote.html', quote=quoteToDelete)
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

@@ -1,9 +1,44 @@
-{%extends "navbar.html"%}
-{% block content %}
-
-<p>Current state token: {{ STATE }}</p>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Log In - QuoteCamp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <meta
+      name="google-signin-client_id"
+      content="883132740010-9cg1h5m22ltc6iavgqrv736as69u3a7u.apps.googleusercontent.com"
+    />
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+  </head>
+  <body>
+    <div class="container" id="boostrap-container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="{{url_for('HomePage')}}">QuoteCamp</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('CategoriesPage')}}">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('NewQuotePage')}}">Add A Quote</a>
+                    </li>
+                </ul>
+                {%if 'username' not in session %}
+                <a class="nav-link" href="{{url_for('LoginPage')}}">Login</a>
+                {%else%}
+                <a class="nav-link" href="{{url_for('disconnect')}}">Log Out</a>
+                {%endif%}
+            </div>
+        </nav>
 <!-- GOOGLE PLUS SIGN IN-->             
-<div id="signinButton">
+<div id="signinButton" style="margin: 20px auto; text-decoration: underline; cursor: pointer;">
     <span class="g-signin"
     data-scope="openid email profile"
     data-clientid="883132740010-9cg1h5m22ltc6iavgqrv736as69u3a7u.apps.googleusercontent.com"
@@ -12,11 +47,12 @@
     data-cookiepolicy="single_host_origin"
     data-callback="signInCallback">
     <!-- data-approvalprompt="force"> -->
-    </span>
+Click here to Login to Google
+</span>
 </div>
     
 <div id="result"></div>
-
+</div>   
 <script>
     function signInCallback(authResult) {
         if (authResult['code']) {
@@ -51,5 +87,5 @@
         } 
     }
 </script>
-
-{% endblock %}
+</body>
+</html>
