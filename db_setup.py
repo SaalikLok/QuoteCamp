@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = 'user'
 
@@ -15,6 +16,7 @@ class User(Base):
     name = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
+
 
 class Category(Base):
     __tablename__ = 'category'
@@ -26,6 +28,7 @@ class Category(Base):
         return{
             'id': self.id,
         }
+
 
 class Quote(Base):
     __tablename__ = 'quote'
@@ -49,5 +52,7 @@ class Quote(Base):
             'id': self.id
         }
 
-engine = create_engine('sqlite:///quotecamp.db', connect_args={'check_same_thread': False})
+
+engine = create_engine('sqlite:///quotecamp.db',
+                       connect_args={'check_same_thread': False})
 Base.metadata.create_all(engine)
