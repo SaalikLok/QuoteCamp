@@ -214,7 +214,7 @@ def CategoriesPage():
     return render_template('categories.html', categories=categories)
 
 
-# Displays the quotes that show up in a particular category 
+# Displays the quotes that show up in a particular category
 @app.route('/categories/<category_id>/')
 def CategoryPage(category_id):
     # Get all the quotes under the specified category
@@ -223,7 +223,7 @@ def CategoryPage(category_id):
     return render_template('category.html', quotes=quotes, category=category)
 
 
-# Shows a view of a quote. This function determines whether the user accessing the 
+# Shows a view of a quote. This function determines whether the user accessing the
 # quote is the owner of the quote, and displays edit/delete buttons accordingly.
 @app.route('/categories/<category_id>/<int:quote_id>')
 def QuotePage(quote_id, category_id):
@@ -311,6 +311,7 @@ def quotesInCategoryJSON(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     quotes = session.query(Quote).filter_by(category_id=category.id).all()
     return jsonify(quotes=[q.serialize for q in quotes])
+
 
 # JSON Endpoint that returns a random quote
 @app.route('/categories/randomquote/JSON')
