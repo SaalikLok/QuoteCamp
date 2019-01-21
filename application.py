@@ -15,7 +15,7 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 app = Flask(__name__)
 
-
+# Setting up the app by loading the client id associated with Google auth, and creating an engine to the database
 CLIENT_ID = json.loads(open('client-secrets.json', 'r')
                        .read())['web']['client_id']
 
@@ -26,6 +26,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+# The home page which renders the main.html template and includes the latest quotes
 @app.route('/')
 def HomePage():
     latestquotes = session.query(Quote).order_by(
@@ -33,6 +34,7 @@ def HomePage():
     return render_template('main.html', latestquotes=latestquotes)
 
 
+# The login page code which creates a new authentication token for the session
 @app.route('/login')
 def LoginPage():
     state = ''.join(random.choice(string.ascii_letters + string.digits)
@@ -44,6 +46,7 @@ def LoginPage():
     # return "Current State Token: " + login_session['state']
 
 
+# GConnect is responsible for connecting the user to the google authentication servers
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # confirm that token sent to client is same as token sent to server
@@ -132,6 +135,7 @@ def gconnect():
     return output
 
 
+# A helper function that creates a new user if they don't exist in the database
 def createUser(login_session):
     newUser = User(name=login_session['username'],
                    email=login_session['email'], picture=login_session['picture'])
@@ -141,11 +145,13 @@ def createUser(login_session):
     return user.id
 
 
+# A helper function to get user info using a user id to query the database
 def getUserInfo(user_id):
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
+# A helper function that gets a user's id using email to query the database
 def getUserID(email):
     try:
         user = session.query(User).filter_by(email=email).one()
@@ -154,6 +160,7 @@ def getUserID(email):
         return None
 
 
+# Responsible for disconnecting a user to the Google Authentication system when they log off.
 @app.route('/gdisconnect')
 def gdisconnect():
     # Disconnect an already connected user
@@ -180,6 +187,7 @@ def gdisconnect():
         return response
 
 
+# Disconnects an active user by deleting their session information
 @app.route('/disconnnect/')
 def disconnect():
     if 'provider' in login_session:
@@ -198,6 +206,7 @@ def disconnect():
         return redirect(url_for('HomePage'))
 
 
+# Displays all the categories of quotes in the app
 @app.route('/categories/')
 def CategoriesPage():
     # List all the categories in the app on a page.
@@ -205,8 +214,8 @@ def CategoriesPage():
     return render_template('categories.html', categories=categories)
 
 
+# Displays the quotes that show up in a particular category 
 @app.route('/categories/<category_id>/')
-@app.route('/categories/category/')
 def CategoryPage(category_id):
     # Get all the quotes under the specified category
     category = session.query(Category).filter_by(id=category_id).one()
@@ -214,6 +223,8 @@ def CategoryPage(category_id):
     return render_template('category.html', quotes=quotes, category=category)
 
 
+# Shows a view of a quote. This function determines whether the user accessing the 
+# quote is the owner of the quote, and displays edit/delete buttons accordingly.
 @app.route('/categories/<category_id>/<int:quote_id>')
 def QuotePage(quote_id, category_id):
     # Get the specifics of the quote page
@@ -225,6 +236,8 @@ def QuotePage(quote_id, category_id):
         return render_template('quoteview.html', quote=quote, creator=creator)
 
 
+# The form that creates a new quote. If a post request is successfully sent through,
+# a new quote is added to the database
 @app.route('/categories/newquote/', methods=['GET', 'POST'])
 def NewQuotePage():
     if 'username' not in login_session:
@@ -245,6 +258,8 @@ def NewQuotePage():
         return render_template('newquote.html', categories=categories)
 
 
+# Edit a quote page. If a post request is successfully sent through,
+# the quote is updated in the database
 @app.route('/categories/<category_id>/<int:quote_id>/edit', methods=['GET', 'POST'])
 def EditQuotePage(quote_id, category_id):
     editedQuote = session.query(Quote).filter_by(id=quote_id).one()
@@ -266,6 +281,7 @@ def EditQuotePage(quote_id, category_id):
         return render_template('editquote.html', quote=editedQuote, categories=categories)
 
 
+# Deletes a quote from the database
 @app.route('/categories/<category_id>/<int:quote_id>/delete', methods=['GET', 'POST'])
 def DeleteQuote(quote_id, category_id):
     quoteToDelete = session.query(Quote).filter_by(id=quote_id).one()
@@ -295,6 +311,13 @@ def quotesInCategoryJSON(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     quotes = session.query(Quote).filter_by(category_id=category.id).all()
     return jsonify(quotes=[q.serialize for q in quotes])
+
+# JSON Endpoint that returns a random quote
+@app.route('/categories/randomquote/JSON')
+def randomQuoteJSON():
+    quotes = session.query(Quote).all()
+    q = random.choice(quotes)
+    return jsonify(quote=[q.serialize])
 
 
 if __name__ == '__main__':
