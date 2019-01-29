@@ -37,7 +37,7 @@ class Quote(Base):
     content = Column(String(500), nullable=False)
     author = Column(String(250))
     poster_id = Column(Integer, ForeignKey('user.id'))
-    category_id = Column(Integer, ForeignKey('category.id'))
+    category_id = Column(String(250), ForeignKey('category.id'))
     datetime_added = Column(DateTime)
     poster = relationship(User)
     category = relationship(Category)
