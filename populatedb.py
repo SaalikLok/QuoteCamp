@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from db_setup import Base, Category, Quote
 import datetime
 
-engine = create_engine('sqlite:///quotecamp.db',
+engine = create_engine('sqlite:///postgresql.db',
                        connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)

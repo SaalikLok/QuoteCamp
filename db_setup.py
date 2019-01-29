@@ -53,6 +53,6 @@ class Quote(Base):
         }
 
 
-engine = create_engine('sqlite:///quotecamp.db',
+engine = create_engine('postgresql:///quotecamp.db',
                        connect_args={'check_same_thread': False})
 Base.metadata.create_all(engine)
