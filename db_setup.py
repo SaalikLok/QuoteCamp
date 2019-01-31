@@ -53,6 +53,6 @@ class Quote(Base):
         }
 
 
-engine = create_engine('postgresql:///quotecamp')
+engine = create_engine('postgresql://localhost/quotecamp')
                        #connect_args={'check_same_thread': False})
 Base.metadata.create_all(engine)
